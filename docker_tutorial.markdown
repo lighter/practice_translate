@@ -2,6 +2,8 @@
 
 這是篇我覺得蠻清楚，而且又解說的蠻清楚的文章，因此嘗試翻成中文當作我的筆記！如果有哪裡不好歡迎指教，謝謝。有些像是`Container`, `Volume`, `Image`我就不特別翻成`容器`, `數據`, `映像檔`了，因為我始終覺得怪怪的。 
 
+***
+
 原文的出處：[http://blog.osteel.me/posts/2015/12/18/from-vagrant-to-docker-how-to-use-docker-for-local-web-development.html](http://blog.osteel.me/posts/2015/12/18/from-vagrant-to-docker-how-to-use-docker-for-local-web-development.html)
 
 你有時常注意科技新知，Docker這一個名詞對你來說應該不陌生。
