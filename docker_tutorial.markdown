@@ -1,8 +1,10 @@
 # 網頁開發者如何使用Docker
 
+這是篇我覺得蠻清楚，而且又解說的蠻清楚的文章，因此嘗試翻成中文當作我的筆記！如果有哪裡不好歡迎指教，謝謝。有些像是`Container`, `Volume`, `Image`我就不特別翻成`容器`, `數據`, `映像檔`了，因為我始終覺得怪怪的。 
+
 原文的出處：[http://blog.osteel.me/posts/2015/12/18/from-vagrant-to-docker-how-to-use-docker-for-local-web-development.html](http://blog.osteel.me/posts/2015/12/18/from-vagrant-to-docker-how-to-use-docker-for-local-web-development.html)
 
-如果你有常常注意科技新知的話，你應該有聽過Docker。
+你有時常注意科技新知，Docker這一個名詞對你來說應該不陌生。
 
 如果沒有，你可以參考一下[維基百科](http://www.wikiwand.com/zh-tw/Docker_(%E8%BB%9F%E9%AB%94)的簡述
 
@@ -12,13 +14,13 @@
 
 > Docker利用Linux核心（kernel）中的資源分離機制，例如cgroups，以及Linux核心命名空間（name space），來建立獨立的軟體容器（containers）。這可以在單一Linux實體下運作，避免啟動一個虛擬機器造成的額外負擔。
 
-OK，聽起來似曾相似，好像蠻有用的。
+OK，有點概念了。
 
-雖然不是很了解，目前在我的Mac，我使用的Vagrant來配合我每一個專案(如果你不知道什麼是Vagrant，可以先看一下[這篇文章](http://blog.osteel.me/posts/2015/01/25/how-to-use-vagrant-for-local-web-development.html)，尤其是[這一部份](http://blog.osteel.me/posts/2015/01/25/how-to-use-vagrant-for-local-web-development.html#vagrant))。
+目前在我的Mac，我使用的Vagrant來建立我每一個專案(如果你不知道什麼是Vagrant，可以先看一下[這篇文章](http://blog.osteel.me/posts/2015/01/25/how-to-use-vagrant-for-local-web-development.html)，尤其是[這一部份](http://blog.osteel.me/posts/2015/01/25/how-to-use-vagrant-for-local-web-development.html#vagrant))。
 
-不論何時，任何專案，我只要使用`vagrant up`指令，很短的時間內，我就可以得到一個獨立的虛擬機器(virtual machine, VM)，非常的便利。
+不論何時，任何專案，我只要使用`vagrant up`指令，短時間內，我就可以得到一個獨立的虛擬機器(virtual machine, VM)，非常的便利。
 
-這仍然要一點時間等待虛擬機器設定完成和啟動，每個專案的時間都不長，相對的也相當佔硬碟的資源。
+但仍然要一點時間等待虛擬機器設定完成和啟動，而且每個專案的執行時間都不長，相對的也佔了不少硬碟資源。
 
 你可以採取Laravel的初步作法[Homestead](https://laravel.com/docs/master/homestead)，將每個專案都運行在同一台虛擬機器上，因此開發環境就無法個別獨立開來。
 
@@ -30,7 +32,7 @@ Docker其實就是將環境個別獨立，並且是運行在同一台虛擬機�
 
 當然囉！
 
-下面我們將會按部就班來操作。
+下面我們會一步一步來操作。
 
 ## 大綱
 
@@ -49,7 +51,7 @@ Docker其實就是將環境個別獨立，並且是運行在同一台虛擬機�
 
 ## 安裝
 
-如同之前所提的，我使用的是Mac，所以下面的教程都會依據Mac為出發。雖然我們是在Mac的環境，但是安裝完成後與Windows不會有太大的差異。如果你是使用Mac或Windows，可以參考[這裡](https://www.docker.com/docker-toolbox)，依據你的作業系統下載Docker Toolbox(如果你是Linux可以直接參考[這裡](https://docs.docker.com/linux/)，無須下載Docker Toolbox)。
+如同之前所提的，我使用的是Mac，所以下面的教程環境使已Mac為主。雖然我們是在Mac的環境，但是安裝完成後與Windows不會有太大的差異。如果你是使用Mac或Windows，可以參考[這裡](https://www.docker.com/docker-toolbox)，依據你的作業系統下載Docker Toolbox(如果你是Linux可以直接參考[這裡](https://docs.docker.com/linux/)，無須下載Docker Toolbox)。
 
 Docker Toolbox會幫你安裝好所有需要的資源。
 
@@ -61,23 +63,23 @@ v1/repositories/library/hello-world/images. You may want to check your
 internet connection or if you are behind a proxy.
 ```
 
-這個錯誤訊息，你只需要再執行一次`docker-machine restart default`指令。
+針對這個錯誤訊息，你只需要再執行一次`docker-machine restart default`指令。
 
-完成之後，你應該有一個虛擬機器在[VituralBox](https://www.virtualbox.org/)執行(虛擬機器的名稱為default)，並且它知道如何找到它，啟動它，建置，推(push)，拉(pull)映像檔，以及知道Docker在哪裡和如何運作。
+完成之後，你應該有一個虛擬機器在[VituralBox](https://www.virtualbox.org/)執行(虛擬機器的名稱為default)，Docker的所有操作都可以在這個名為default的虛擬機操作。
 
-但還不夠具體。你如何知道開啟的網頁要對應到哪個機器，然後資料(database)從哪來?
+到目前還不是很了解。如何知道開啟的網頁要對應到哪台機器，資料(database)在哪?
 
 ## 設定
 
-接下來的所有設定我都會放到[GitHub](https://github.com/osteel/docker-tutorial)上，你可以隨時拿去參考(甚至你可以直接拿來使用)。
+接下來的所有設定我都會放到[GitHub](https://github.com/osteel/docker-tutorial)上，你可以隨時參考(甚至你可以直接使用)。
 
-此外，或許對於虛擬機器(VM)和Docker，你會感到有點困惑。但其實他們都是一樣的。
+此外，或許對於虛擬機器(VM)和Docker，你會感到有點困惑。其實差異不大。
 
-我平常都是使用[LEMP stack](https://lemp.io/)，而且我使用的是PHP7，所以我們需要有Linux/PHP7/Nginx/MySQL(我們將會在另外一篇文章看到如何建立一個混合的框架)。
+平常我都是使用[LEMP stack](https://lemp.io/)，而且我使用的是PHP7，所以我們需要有Linux/PHP7/Nginx/MySQL(我們將會在另外一篇文章看到如何建立一個混合的框架)。
 
 我們可以使用[Docker Compose](https://docs.docker.com/compose/)來達到Linux/PHP7/Nginx/MySQL各自獨立在Container運行。
 
-很多教程在一開始會教你如何使用Dokcer的指令設定一個Container，或者如何串連多個Container，但實際運作上並不太可能只有一個或兩個Container，如果使用Docker指令一台一台的去串連，這是很痛苦的事情。
+很多教程在一開始會教你如何使用Dokcer的指令設定一個Container，或者如何串連多個Container，但實際運作上通常有一個或兩個Container以上，如果使用Docker指令一台一台的去串連，這是件很痛苦的事。
 
 透過YAML設定檔，可以讓你自己設定各自Container如何連接。我們將會將各個服務放到各自的Contrainer：
 
@@ -85,10 +87,10 @@ internet connection or if you are behind a proxy.
 * PHP-FPM 一個Container
 * MySQL 一個Container
 * phpMyAdmin 一個Container
-* 一個Container 使MySQL的資料持久化
-* 一個Container 放置 Application Code
+* 一個Container 使MySQL資料庫的資料
+* 一個Container 放我們的程式碼
 
-其他教程中得，他們通常都會使用他們自己的images，如果他們沒有特別說明原因，這對於剛接觸Docker的人或許有些困惑或疑問。
+在其他教程，通常都會使用他們自己的images，如果沒有特別說明原因，對於剛接觸Docker的人或許有些困惑或疑問。
 
 下面我將會使用官方的images和Dockerfiles來實作。
 
@@ -96,7 +98,7 @@ internet connection or if you are behind a proxy.
 
 一開始，為了確保可以正確的運行，先從最簡單的設定做起。
 
-建立一個資料夾做為你的專案(這裡我將我的資料夾命名為docker-tutorial)，然後在docker-tutorial內建立一個`docker-compose.yml`檔案。加入下面的設定到`docker-compose.yml`：
+建立一個資料夾做為你的專案目錄(這裡我命名為docker-tutorial)，然後在docker-tutorial內建立一個`docker-compose.yml`檔案。加入下面的設定到`docker-compose.yml`：
 
 ```
 nginx: 
@@ -121,21 +123,21 @@ $ docker-machine ip default
 
 ![](images/pic_1.png)
 
-到這裡我們做了什麼?
+到這裡，我們做了什麼?
 
-我們告訴Docker Compose我們想要一個名為`nginx`的Container，並且使用官方Nginx最新的image，以及使用port為80。
+我們告訴Docker Compose我們想要一個名為`nginx`的Container，並且使用官方Nginx最新的image，port指定為80。
 
-接著要求Docker Compose依據`docker-compose.yml`的設定建置和啟動Container。`-d`是允許Container在背景執行，並且回傳結果。
+接著要求Docker Compose依據`docker-compose.yml`的設定建置和啟動Container。`-d`是將Container丟到背景執行。
 
-最後取得IP，Docker是運行在名為`default`的虛擬機上(如果你想確認你的Docker是運行在哪台機器上，你可以使用`docker-machine ls`來取得)。
+最後取得IP，Docker是運行在`default`這台虛擬機上(如果你想確認你的Docker是運行在哪台機器上，你可以使用`docker-machine ls`來取得)。
 
-因為使用了port 80，所以我們可以直接使用瀏覽器開啟IP位置來開啟網頁。
+因為使用port 80，我們可以直接使用瀏覽器開啟IP位置來開啟網頁。
 
 最後一件事情，執行`docker ps`指令，你可以看到如下圖：
 
 ![](images/pic_2.png)
 
-上圖你可以看到一個Container和image正在運行。而這個Container名為`dockertutorial_nginx_1`。Docker compose是使用了資料夾加上image名稱和一個數字來命名。
+上圖你可以看到一個Container使用了哪一個image正在運行。而這個Container名為`dockertutorial_nginx_1`。Docker compose是使用了資料夾加上image名稱和一個數字來命名。
 
 ## PHP
 
@@ -161,18 +163,18 @@ php:
 		- .:/var/www/html
 ```
 
-我們增加一個名為`php`的Container。我們指定使用`7.0-fpm`版本。預設並沒有對外接口，這裡指定對外的接口為9000。
+我們增加一個名為`php`的Container，並指定使用`7.0-fpm`的版本。並指定expose為9000。
 
-`expose`和`ports`有什麼不同?`expose`是用來指定Container可以連接的接口，`ports`則是外部連接機器的接口。
+`expose`和`ports`有什麼不同?`expose`是用來指定Container之間連接的接口，`ports`則是外部連接機器的接口。
 
 `volumes`，將目前的目錄`.`掛載到`/var/www/html`下，也就是我們專案的目錄會同步到Container的`/var/www/html`。
 
-`nginx` 的Container設定`volumes`如同`php`(Nginx的Container必須知道哪個服務目錄的路徑)。`links`，是告訴`nginx` Container要連結到`php`(如果還是不了解，下面很快會告訴你)。
+`nginx` Container設定`volumes`如同`php`(Nginx的Container必須知道哪個服務目錄的路徑)。`links`，是告訴`nginx` Container要連結到`php`(如果還是不了解，下面很快會告訴你)。
 
 我們將`image`取代成`build`，並指向`nginx/`目錄，這裡是告訴Docker Compose不要使用已存在的image，而是使用`nginx/`下的
 `Dockerfile`去建立一個新的image。
 
-如果你有看過新手指引，你應該對於Dockerfile有點了解。你可以透過Dockerfile來告訴Docker你要安裝的image和你要執行的指令等等。
+如果你有看過新手指南，你應該對於Dockerfile有點了解。你可以透過Dockerfile來告訴Docker你要安裝的image和你要執行的指令等等。
 
 建立一個名為`Dockerfile`的檔案在`nginx/`目錄下，下面為Dockerfile的內容
 
@@ -249,13 +251,13 @@ fastcgi_pass php:9000;
 </html>
 ```
 
-這裡僅有簡單的HTML代碼，用來確認PHP檔案可以執行。
+這裡只有簡單的HTML代碼，用來確認PHP檔案可以執行。
 
 下圖是目前的目錄結構：
 
 ![](images/pic_3.png)
 
-再次執行`docker-compose up -d`。Docker Compose 會依據設定的，再次建立和啟動Container(這次應該會下載PHP image)：
+再次執行`docker-compose up -d`。Docker Compose 會依據設定的，再次建立和啟動Container(這次會下載PHP image)：
 
 ![](images/pic_4.png)
 
@@ -265,7 +267,7 @@ fastcgi_pass php:9000;
 
 ![](images/pic_5.png)
 
-現在可以再試著重啟網頁，可以看到`index.php`的title，"Hello Universel!"。
+現在可以試著重啟網頁，可以看到`index.php`的title，"Hello Universel!"。
 
 接著加入database了！
 
@@ -273,7 +275,7 @@ fastcgi_pass php:9000;
 
 ### Volumes 和 data containers
 
-在設定MySQL之前，先來看看`volumes`。`nginx`和`php` container都有一樣的設定，這樣的設定方式在一般的練習很常見。
+在設定MySQL之前，先來看看`volumes`。`nginx`和`php` container都有一樣的設定，這樣的設定方式很常見。
 
 另外一種方式，將資料的來源獨立出來給其他container使用。
 
@@ -303,23 +305,23 @@ app:
     command: "true"
 ```
 
-首先新增一個名為`app`的container，`volumes`的設定與原本的`nginx`和`php`一樣。為了將應用程式的code給獨立成一個container。當Docker Compose 建立起這個`app` container，會立即停止，因為這個container沒有做任何動作，為了不讓它停止特別指定了`command: "true"`。這可以讓我們只存取container，也不會無謂的浪費資源。
+首先新增一個名為`app`的Container，`volumes`的設定與原本的`nginx`和`php`一樣。將應用程式的code給獨立成一個Container。當Docker Compose 建立起這個`app` Container，會立即停止，因為這個Container沒有做任何動作，為了不讓它停止特別指定了`command: "true"`。這可以讓我們只存取Container，也不會無謂的浪費資源。
 
 除此之外，你也可以發現我們使用了與`php`一樣的image，同樣的image不會重複下載，而是使用了相同的image，避免不必要的浪費。
 
-在`nginx`和`php`的設定中，原本的`volumes`改為`volumes_from`，而且指定為`app` container。其下之意就是告訴Docker Compose要掛載的`volumes`是從`app`的container而來。
+在`nginx`和`php`的設定中，原本的`volumes`改為`volumes_from`，而且指定為`app` Container。其下之意就是告訴Docker Compose要掛載的`volumes`是來自`app` Container。
 
 再次執行`docker-compose up -d`。執行完成時執行`docker ps`可以看到目前有哪些container正在運行，如下圖：
 
 ![](images/pic_6.png)
 
-如果對於data container和volumes有興趣(我鼓勵你這麼做)，我推薦你這邊[文章(作者Adrian Mouat)](http://container-solutions.com/understanding-volumes-docker/)(在文章最後的引用也可以找到這篇文章)。
+如果對於data Container和volumes有興趣，我推薦你這邊[文章(作者Adrian Mouat)](http://container-solutions.com/understanding-volumes-docker/)(在文章最後的引用也可以找到這篇文章)。
 
 ## MySQL
 
 緊接著來看到MySQL。
 
-開啟`docker-compose.yml`，在最後加上下面的設定：
+開啟`docker-compose.yml`，加上下面的設定：
 
 ```
 mysql:
@@ -361,9 +363,9 @@ RUN docker-php-ext-install pdo_mysql
 
 這只是基本的安裝pdo_mysql套件，透過這個套件我們可以連接database(如何安裝PHP套件，你可以參考這篇文章 [image's doc](https://hub.docker.com/_/php/))。將這個檔案放置到新的`php/`目錄下。
 
-往下看到MySQL的設定，你可以先看看這篇文章[official MySQL image](https://hub.docker.com/_/mysql/)。`environmet`是我們目前沒看過的設定，它允許我們定義環境變數供container使用。這邊我們特別定義了MySQL的root密碼和名稱(`project`)，以及一位使用者的密碼和database名稱(所有可用的變數都列在[image's documentation](https://hub.docker.com/_/mysql/))。
+往下看到MySQL的設定，你可以先看看這篇文章[official MySQL image](https://hub.docker.com/_/mysql/)。`environmet`是我們目前沒看過的設定，它允許我們定義環境變數供Container使用。這邊我們特別定義了MySQL的root密碼和名稱(`project`)，以及一位使用者的密碼和database名稱(所有可用的變數都列在[image's documentation](https://hub.docker.com/_/mysql/))。
 
-如同前面所提到的，`data` container的目的要管理MySQL container存放在`/var/lib/mysql`的資料(並且重複使用MySQL image以節省硬碟空間)。或許你會發現，我們並沒有宣告本機要掛載到`/var/lib/mysql`(也就是冒號前本機路徑)，目錄位於何處，我們交由Docker Compose來控制，只需知道資料內容是存在的。
+如同前面所提到的，`data` Container的目的要管理MySQL Container存放在`/var/lib/mysql`的資料(並且重複使用MySQL image以節省硬碟空間)。或許你會發現，我們並沒有宣告本機要掛載到`/var/lib/mysql`(也就是冒號前本機路徑)，目錄位於何處，我們交由Docker Compose來控制，只需知道資料內容是存在的。
 
 如果`MYSQL_DATABASE`已經存在了，`MYSQL_ROOT_PASSWORD`的設定會被忽略，保持既有的設定。
 
@@ -402,25 +404,25 @@ RUN docker-php-ext-install pdo_mysql
 
 這段code會連接到database，並列出目前所有的table。
 
-完成後再次執行`docker-compse up -d`(可能需要等待一段時間，因為需要下載MySQL image)，完成後執行`docker ps -a`。你應該可以看到5個container，其中兩個是退出(Exited)的：
+完成後再次執行`docker-compse up -d`(可能需要等待一段時間，因為需要下載MySQL image)，完成後執行`docker ps -a`。你應該可以看到5個Container，其中兩個是退出(Exited)的：
 
 ![](images/pic_7.png)
 
 現在開啟網頁是顯示*"There are no tables in database 'project'"*。
 
-下一步是建立phpMyAdmin，而你將可以使用他來編輯你的database。現在我在MySQL的container來操作MySQL command line。
+下一步是建立phpMyAdmin，他是一個圖形化的介面供你管理MySQL。現在我先在MySQL的Container來操作MySQL command line。
 
-從上圖的結果，找到MySQL container的ID(在我的環境是`5207587d116b`)並且複製他；執行下面的指令：
+從上圖的結果，找到MySQL Container的ID(在我的環境是`5207587d116b`)並且複製他；執行下面的指令：
 
 ```
 $ docker exec -it 5207587d116b /bin/bash
 ```
 
-接著你可以在這個container執行指令(你也可以用container的name來取代ID執行)。
+接著你可以在這個Container執行指令(你也可以用Container的name來取代ID執行)。
 
-`docker exec`允許你的指令在container中執行，`-t`重現終端機，`-i`允許與終端機互動。`/bin/bash`是建立一個在container的`bash`介面。
+`docker exec`允許你的指令在Container中執行，`-t`重現終端機，`-i`允許與終端機互動。`/bin/bash`是建立一個在Container的`bash`介面。
 
-你也可以在其他container使用這段指令。
+你也可以在其他Container使用這段指令。
 
 然後使用`mysql -uroot -psecret`進入MySQL CLI。執行`show database;`列出所有的database，如下圖：
 
@@ -451,7 +453,7 @@ data:
 
 Docker Compose會將本機掛載到`/var/lib/mysql`的目錄下，但本機位置是?
 
-再次執行`docker ps -a`，複製MySQL container狀態為退出(Exited)的ID(在我的環境是`7970b851b07a`)，然後執行：
+再次執行`docker ps -a`，複製MySQL Container狀態為退出(Exited)的ID(在我的環境是`7970b851b07a`)，然後執行：
 
 ```
 $ docker inspect 7970b851b07a
@@ -474,17 +476,17 @@ $ docker inspect 7970b851b07a
 ...
 ```
 
-`"Source"`是資料存在於container的路徑。
+`"Source"`是資料存在於Container的路徑。
 
 我懂了。
 
-但如果我們移除這個container，會發生什麼事情呢?
+但如果我們移除這個Container，會發生什麼事情呢?
 
 問得很好！
 
 事實他們仍然存在於硬碟裡。
 
-有2個解決方法，1. 我們要確保移除container時volume一同被移除，我們可以使用`-v`的參數：
+有2個解決方法，1. 我們要確保移除Container時volume一同被移除，我們可以使用`-v`的參數：
 
 ```
 $ docker rm -v containerid
@@ -516,13 +518,13 @@ phpmyadmin:
 		PMA_HOST: mysql
 ```
 
-如同之前的操作，指定好官方的[phpMyAdmin image](https://hub.docker.com/r/phpmyadmin/phpmyadmin/)。我們發佈的port 8080對應到虛擬機的8080，以及連結`mysql` container。最後設定`PMA_HOST`環境變數。
+如同之前的操作，指定好官方的[phpMyAdmin image](https://hub.docker.com/r/phpmyadmin/phpmyadmin/)。我們發佈的port 8080對應到虛擬機的8080，以及連結`mysql` Container。最後設定`PMA_HOST`環境變數。
 
 儲存並再次執行`docker-compose up -d`。等待phpMyAdmin image下載，當一切就緒後，開啟網頁，這次在網址後加上`:8080`，就可以看到phpMyAdmin登入畫面：
 
 ![](images/pic_9.png)
 
-帳號密碼輸入分別輸入`root`和`secret`，即可成功登入(如同`mysql` container的設定，`project` / `project`一樣也可以，而且可以存取`project`的database)。
+帳號密碼輸入分別輸入`root`和`secret`，即可成功登入(如同`mysql` Container的設定，`project` / `project`一樣也可以，而且可以存取`project`的database)。
 
 很容易，對吧?
 
@@ -530,17 +532,17 @@ phpmyadmin:
 
 設定檔放在[GitHub repository](https://github.com/osteel/docker-tutorial)，歡迎自行取用。
 
-## 掌管多個專案
+## 管理多個專案
 
-Docker有一個很大優勢，當你有多個container使用相同的image時，使用的硬碟空間只會增加一點點，通常只有幾MB。
+Docker有一個很大優勢，當你有多個Container使用相同的image時，使用的硬碟空間只會增加一點點，通常只有幾MB。
 
-除非你想要用PostgreSQL取代成MySQL，不然會繼續使用本機已存在的image。
+除非你想要用PostgreSQL取代成MySQL，不然只會繼續使用本機已存在的image。
 
 如何在同一台虛擬機管理不同的專案呢?
 
 但Docker只有一個私有IP，你可以使用port來區分專案，無需每個專案都執行在port 80上。
 
-在上述的過程中你可以發現我們一直輪流使用`docker`和`docker-compose`指令，這或許讓你有點混淆。`docker-compose`就如同執行`docker`的指令；`docker`能多個container，`docker-compose`可以操作`docker-compose.yml`設定內的container。
+在上述的過程中你可以發現我們一直輪流使用`docker`和`docker-compose`指令，這或許讓你有點混淆。`docker-compose`就如同執行`docker`的指令；`docker`可針對個別Container做操作，`docker-compose`可以同時操作`docker-compose.yml`設定內的Container。
 
 例如
 
@@ -548,7 +550,7 @@ Docker有一個很大優勢，當你有多個container使用相同的image時，
 docker ps -a
 ```
 
-這指令會顯示目前在Docker上所有的container包含沒有在運行的container。
+這指令會顯示目前在Docker上所有的Container包含沒有在運行的Container。
 
 而
 
@@ -556,19 +558,19 @@ docker ps -a
 docker-compose ps
 ```
 
-他與上面的目的是一樣的，但是僅會列出`docker-compose.yml`設定內的container(`-a`參數是非必要的，而且顯示順序與設定檔不同)。
+他與上面的目的是一樣的，但是僅會列出`docker-compose.yml`設定內的Container(`-a`參數是非必要的，而且顯示順序與設定檔不同)。
 
-當你有很多container需要管理時，他就可以派上用場了，例如：
+當你有很多Container需要管理時，他就可以派上用場了，例如：
 
 ```
 docker-compose stop
 ```
 
-這將會停止目前所有在`docker-compose.yml`內的container。所有的container停止後，同時也會釋出port 80。
+這將會停止目前所有在`docker-compose.yml`內的Container。所有的Container停止後，同時也會釋出port 80。
 
 要再次啟動可以使用先前提到的`docker-compose up -d`指令。
 
-要刪除目前已經停止運作的container，你可以執行：
+要刪除目前已經停止運作的Container，你可以執行：
 
 ```
 docker-compose rm
@@ -580,7 +582,7 @@ docker-compose rm
 
 ## 故障排除
 
-到目都可以正常運作了！Docker compose有可能會不建置一個image或者啟動container，而且通常顯示的訊息不是有很大的幫助。
+到目都可以正常運作了！Docker compose有可能會不建置一個image或者啟動Container，而且通常顯示的訊息不是有很大的幫助。
 
 當有錯誤發生時，試著執行：
 
@@ -588,15 +590,15 @@ docker-compose rm
 docker-compose logs
 ```
 
-他會顯示目前`docker-compose.yml`設定檔的logs。你也可以執行`docker-compose ps`檢查目前所有container的`State`欄位狀態，如果有一個exit後的代碼數字不是，代表那個container有些問題。
+他會顯示目前`docker-compose.yml`設定檔的logs。你也可以執行`docker-compose ps`檢查目前所有Container的`State`欄位狀態，如果有一個exit後的代碼數字不是`0`，代表那個Container有些問題。
 
-這時你可以針對這個container顯示logs：
+這時你可以針對這個Container顯示logs：
 
 ```
 docker logs containerid
 ```
 
-container的name也一樣可行。
+Container的name也一樣可行。
 
 ## 結論
 
@@ -604,7 +606,7 @@ Docker是一個很了不起的技術(雖然剛起步，但相信我，它是非�
 
 這裡我們使用Docker Toolbox和Boot2Docker，一切看似容易，因為它已經自動幫我做好了很多事情。而我們也可以安裝Docker在Vagrant box上。
 
-但這麼做意義不大。Docker成長速度之快，很多資源要區分獨立並非一件容易的事情。
+但這麼做意義不大。Docker成長速度之快，資源也很豐富。
 
 目前我仍是個初學者，如果你發現發現到任何錯誤，非常歡迎讓我知道，並且修正它。
 
