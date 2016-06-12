@@ -422,7 +422,7 @@ $ docker exec -it 5207587d116b /bin/bash
 
 接著你可以在這個Container執行指令(你也可以用Container的name來取代ID執行)。
 
-`docker exec`允許你的指令在Container中執行，`-t`重現終端機，`-i`允許與終端機互動。`/bin/bash`是建立一個在Container的`bash`介面。
+`docker exec`允許你的指令在Container中執行，`-t`讓Docker分配一個假的終端機(pseudo-tty)並綁定到Contanier的標準輸入(參考[Docker —— 从入门到实践](https://www.gitbook.com/book/yeasy/docker_practice/details))，`-i`允許與終端機互動。`/bin/bash`是建立一個在Container的`bash`介面。
 
 你也可以在其他Container使用這段指令。
 
