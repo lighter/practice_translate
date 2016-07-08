@@ -1,4 +1,4 @@
-# 每天使用Git的19 Tips
+# 每天使用Git的19小技巧
 
 原文出處：[http://www.alexkras.com/19-git-tips-for-everyday-use/](http://www.alexkras.com/19-git-tips-for-everyday-use/)
 
