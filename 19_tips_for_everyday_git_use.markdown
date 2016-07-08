@@ -387,5 +387,3 @@ git很聰明，他知道你異動了什麼，只需要加上一個參數`-w`就�
 你也可以結合`git bisect`寫一個自動化的script。你可以參考[http://git-scm.com/docs/git-bisect#_bisect_run](http://git-scm.com/docs/git-bisect#_bisect_run)。
 
 ![](http://www.alexkras.com/wp-content/uploads/git-bisect.gif)
-
-
